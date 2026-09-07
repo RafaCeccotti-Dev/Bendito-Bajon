@@ -1,0 +1,106 @@
+[
+  {
+    "id": "clasica",
+    "category": "burgers",
+    "categoryLabel": "BURGER'S",
+    "name": "Clásica",
+    "description": "Carne smasheada, cheddar x2, lechuga, tomate, aderezo Bendito Bajón.",
+    "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
+  },
+  {
+    "id": "oklahoma",
+    "category": "burgers",
+    "categoryLabel": "BURGER'S",
+    "name": "Oklahoma",
+    "description": "Carne smasheada, cheddar x2, cebolla finamente cortada cocinada con los medallones.",
+    "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
+  },
+  {
+    "id": "cuarto",
+    "category": "burgers",
+    "categoryLabel": "BURGER'S",
+    "name": "Cuarto",
+    "description": "Carne smasheada, cheddar x2, cebollita picada, ketchup y mostaza.",
+    "prices": { "S": 12000, "D": 15000, "T": 18000, "C": 20000 }
+  },
+  {
+    "id": "extra-cheddar",
+    "category": "burgers",
+    "categoryLabel": "BURGER'S",
+    "name": "Extra Cheddar",
+    "description": "Carne smasheada, cheddar x3, aderezo Bendito Bajón.",
+    "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
+  },
+  {
+    "id": "cheese-burger",
+    "category": "burgers",
+    "categoryLabel": "BURGER'S",
+    "name": "Cheese Burger",
+    "description": "Carne smasheada, cheddar x2, aderezo Bendito Bajón.",
+    "prices": { "S": 12000, "D": 15000, "T": 18000, "C": 20000 }
+  },
+  {
+    "id": "butter",
+    "category": "benditas",
+    "categoryLabel": "BENDITAS",
+    "name": "Butter",
+    "description": "Carne smasheada, manteca al cocinar, mayo ajo Hellmann's.",
+    "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
+  },
+  {
+    "id": "cheese-bacon",
+    "category": "benditas",
+    "categoryLabel": "BENDITAS",
+    "name": "Cheese Bacon",
+    "description": "Carne smasheada, cheddar x2, panceta ahumada, barbacoa.",
+    "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
+  },
+  {
+    "id": "bacon-2",
+    "category": "benditas",
+    "categoryLabel": "BENDITAS",
+    "name": "Bacon 2.0",
+    "description": "Carne smasheada, cheddar x2, panceta ahumada, cebolla caramelizada, alioli.",
+    "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
+  },
+  {
+    "id": "ameri",
+    "category": "benditas",
+    "categoryLabel": "BENDITAS",
+    "name": "Ameri",
+    "description": "Carne smasheada, cheddar x2, cebolla morada picada, mayo ajo Hellmann's.",
+    "prices": { "S": 12000, "D": 15000, "T": 18000, "C": 20000 }
+  },
+  {
+    "id": "mdb",
+    "category": "bajoneras",
+    "categoryLabel": "BAJONERAS",
+    "name": "MDB",
+    "description": "Carne smasheada, cheddar x2, muzzarella, lechuga en la tapa, chiminesa.",
+    "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
+  },
+  {
+    "id": "argenta",
+    "category": "bajoneras",
+    "categoryLabel": "BAJONERAS",
+    "name": "Argenta",
+    "description": "Carne smasheada, emmental x2, morrones salteados, salsa criolla, mayo casera.",
+    "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
+  },
+  {
+    "id": "bendita-crispy",
+    "category": "bajoneras",
+    "categoryLabel": "BAJONERAS",
+    "name": "Bendita Crispy",
+    "description": "Carne smasheada, cheddar x2, cebolla crispy, panceta ahumada, barbacoa o aderezo Bendito.",
+    "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
+  },
+  {
+    "id": "bendita-provo",
+    "category": "bajoneras",
+    "categoryLabel": "BAJONERAS",
+    "name": "Bendita Provo",
+    "description": "Carne smasheada, provoleta, danbo, salsa de tomates cherry, mayo chimi.",
+    "prices": { "S": 14000, "D": 17500, "T": 20000, "C": 23000 }
+  }
+]
