@@ -3,7 +3,8 @@ export const siteConfig = {
   tagline: "#momentobajon",
   city: "Ceres",
   instagramUrl: "https://www.instagram.com/bendito.bajon_/",
-  catalogUrl: "https://wa.me/c/142649235398751",
+  // Link de catálogo WhatsApp (wa.me/c/<numero con prefijo de país>, sin +, ni espacios)
+  catalogUrl: "https://wa.me/c/5493491440753",
   /** Número WhatsApp sin +. Override con VITE_WHATSAPP_NUMBER. */
   whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? "5493491440753",
   shippingFee: Number(import.meta.env.VITE_SHIPPING_FEE ?? 1500),
