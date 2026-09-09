@@ -1,11 +1,11 @@
 export const siteConfig = {
   brand: "Bendito Bajón",
   tagline: "#momentobajon",
-  city: "Rafaela",
+  city: "Ceres",
   instagramUrl: "https://www.instagram.com/bendito.bajon_/",
   catalogUrl: "https://wa.me/c/142649235398751",
-  /** Número WhatsApp sin +. Completar antes de producción real. */
-  whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? "5493492000000",
+  /** Número WhatsApp sin +. Override con VITE_WHATSAPP_NUMBER. */
+  whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? "5493491440753",
   shippingFee: Number(import.meta.env.VITE_SHIPPING_FEE ?? 1500),
 }
 

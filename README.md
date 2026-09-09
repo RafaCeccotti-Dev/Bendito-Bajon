@@ -15,7 +15,7 @@ npm run dev
 Variables opcionales (`.env`):
 
 ```env
-VITE_WHATSAPP_NUMBER=5493492XXXXXX
+VITE_WHATSAPP_NUMBER=5493491440753
 VITE_SHIPPING_FEE=1500
 ```
 
@@ -33,7 +33,7 @@ No me pases usuario ni contraseña. Lo hacés vos en 5 minutos:
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
 5. Variables (Settings → Environment variables):
-   - `VITE_WHATSAPP_NUMBER` = número del local sin + (ej. `5493492123456`)
+   - `VITE_WHATSAPP_NUMBER` = `5493491440753`
    - `VITE_SHIPPING_FEE` = `1500` (o el que digan)
    - Secret: `MP_ACCESS_TOKEN` = Access Token de MercadoPago (para el link de pago)
 6. **Save and Deploy**.
