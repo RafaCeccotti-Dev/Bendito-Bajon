@@ -26,7 +26,8 @@ export async function onRequestPost(context) {
     return json(
       {
         error:
-          "Falta MP_ACCESS_TOKEN en Cloudflare. El pedido igual puede ir por WhatsApp.",
+          "Falta MP_ACCESS_TOKEN en Cloudflare. Cargá el Access Token de MercadoPago Developers.",
+        code: "MP_TOKEN_MISSING",
       },
       503,
     )
@@ -43,18 +44,20 @@ export async function onRequestPost(context) {
     return json({ error: "Carrito vacío" }, 400)
   }
 
+  const origin = new URL(context.request.url).origin
+
   const mpItems = body.items.map((item) => {
     const product = menu.find((p) => p.id === item.id)
     let unit = item.unit_price
     if (product?.fixedPrice != null) {
       unit = product.fixedPrice
     } else if (product?.prices) {
-      const size = String(item.size || item.title.split(" ").pop() || "D")
+      const size = String(item.size || "D")
       unit = product.prices[size] ?? item.unit_price
     }
     return {
-      title: item.title,
-      quantity: item.quantity,
+      title: String(item.title || product?.name || "Producto").slice(0, 120),
+      quantity: Number(item.quantity) || 1,
       unit_price: Number(unit) || 0,
       currency_id: "ARS",
     }
@@ -64,16 +67,29 @@ export async function onRequestPost(context) {
     mpItems.push({
       title: "Envío a domicilio",
       quantity: 1,
-      unit_price: body.shippingFee,
+      unit_price: Number(body.shippingFee) || 0,
       currency_id: "ARS",
     })
   }
 
   const preference = {
     items: mpItems,
-    payer: { name: body.customerName },
+    payer: {
+      name: body.customerName || "Cliente",
+    },
     statement_descriptor: "BENDITO BAJON",
-    external_reference: `${body.customerName}-${Date.now()}`,
+    external_reference: `bb-${Date.now()}`,
+    back_urls: {
+      success: `${origin}/checkout?mp=success`,
+      pending: `${origin}/checkout?mp=pending`,
+      failure: `${origin}/checkout?mp=failure`,
+    },
+    auto_return: "approved",
+    metadata: {
+      customer_name: body.customerName || "",
+      mode: body.mode || "pickup",
+      address: body.address || "",
+    },
   }
 
   const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
@@ -87,10 +103,18 @@ export async function onRequestPost(context) {
 
   const data = await mpRes.json()
   if (!mpRes.ok) {
-    return json({ error: data.message ?? "Error MercadoPago" }, 502)
+    return json(
+      {
+        error: data.message || data.error || "Error MercadoPago",
+        details: data,
+      },
+      502,
+    )
   }
 
   return json({
-    init_point: data.init_point ?? data.sandbox_init_point,
+    id: data.id,
+    init_point: data.init_point,
+    sandbox_init_point: data.sandbox_init_point,
   })
 }

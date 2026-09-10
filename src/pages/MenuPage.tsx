@@ -28,8 +28,8 @@ function ProductCard({ product }: { product: Product }) {
           className="h-44 w-full object-cover"
         />
       ) : (
-        <div className="flex h-36 items-center justify-center bg-gradient-to-br from-sky/35 via-cloud to-halo/30">
-          <img src={siteConfig.mascotSrc} alt="" className="h-20 w-20 opacity-90" />
+        <div className="flex h-36 items-center justify-center bg-gradient-to-br from-sky/35 via-transparent to-halo/25">
+          <img src={siteConfig.mascotSrc} alt="" className="h-24 w-auto object-contain drop-shadow-md" />
         </div>
       )}
       <div className="p-5">
@@ -151,7 +151,7 @@ export function MenuPage() {
                 />
               ) : (
                 <div className="flex h-36 items-center justify-center bg-gradient-to-br from-halo/40 to-sky/30">
-                  <img src={siteConfig.mascotSrc} alt="" className="h-20 w-20" />
+                  <img src={siteConfig.mascotSrc} alt="" className="h-24 w-auto object-contain" />
                 </div>
               )}
               <div className="p-5">

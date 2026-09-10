@@ -8,19 +8,19 @@ export function HomePage() {
 
   return (
     <div>
-      <section className="relative min-h-[88vh] overflow-hidden">
+      <section className="relative min-h-[82vh] overflow-hidden">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-16 top-24 h-32 w-52 rounded-full cloud animate-floaty" />
-          <div className="absolute right-8 top-20 h-20 w-36 rounded-full cloud animate-floaty [animation-delay:1s]" />
-          <div className="absolute bottom-24 left-1/3 h-24 w-44 rounded-full cloud animate-floaty [animation-delay:0.4s]" />
+          <div className="absolute right-10 top-40 h-20 w-36 rounded-full cloud animate-floaty [animation-delay:1s]" />
+          <div className="absolute bottom-28 left-1/3 h-24 w-44 rounded-full cloud animate-floaty [animation-delay:0.4s]" />
         </div>
 
-        <div className="relative mx-auto grid max-w-5xl items-center gap-8 px-4 pb-16 pt-10 sm:grid-cols-[1.1fr_0.9fr] sm:px-6 sm:pb-20 sm:pt-14">
-          <div className="animate-fade-up">
+        <div className="relative mx-auto max-w-5xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20">
+          <div className="max-w-2xl animate-fade-up">
             <p className="font-display text-sm font-semibold uppercase tracking-[0.22em] text-blood/80">
               {siteConfig.city} · smash burgers
             </p>
-            <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold leading-[0.95] text-blood sm:text-7xl">
+            <h1 className="mt-3 font-display text-5xl font-bold leading-[0.95] text-blood sm:text-7xl">
               {siteConfig.brand}
             </h1>
             <p className="mt-2 font-display text-2xl text-blood-hot sm:text-3xl">
@@ -42,27 +42,17 @@ export function HomePage() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Abrir Instagram"
-                className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-blood/30 bg-white/55 px-5 text-base font-bold text-blood backdrop-blur transition hover:border-blood"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-blood/30 bg-white/55 text-blood backdrop-blur transition hover:border-blood"
               >
                 <InstagramIcon className="h-5 w-5" />
-                <span className="sr-only">Instagram</span>
               </a>
             </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md animate-fade-up [animation-delay:120ms]">
-            <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-halo/40 via-white/20 to-blood/10 blur-2xl" />
-            <img
-              src={siteConfig.mascotSrc}
-              alt="Mascota Bendito Bajón"
-              className="relative mx-auto w-[78%] max-w-sm animate-floaty drop-shadow-2xl"
-            />
           </div>
         </div>
       </section>
 
       {promos.length > 0 ? (
-        <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+        <section className="relative z-20 mx-auto max-w-5xl px-4 py-10 sm:px-6">
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-blood/70">
@@ -91,7 +81,11 @@ export function HomePage() {
                   />
                 ) : (
                   <div className="flex h-28 items-center justify-center bg-gradient-to-r from-sky/40 to-halo/40">
-                    <img src={siteConfig.mascotSrc} alt="" className="h-16 w-16" />
+                    <img
+                      src={siteConfig.mascotSrc}
+                      alt=""
+                      className="h-16 w-auto object-contain"
+                    />
                   </div>
                 )}
                 <div className="p-5">
@@ -113,7 +107,7 @@ export function HomePage() {
         </section>
       ) : null}
 
-      <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <section className="relative z-20 mx-auto max-w-5xl px-4 py-12 sm:px-6">
         <h2 className="font-display text-3xl font-bold text-blood">El menú Bendito</h2>
         <p className="mt-3 max-w-3xl text-base leading-relaxed text-ink/75 sm:text-lg">
           Burgers, papas, postres y bebidas. Elegí, sumá al carrito y cerramos

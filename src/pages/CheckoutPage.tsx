@@ -1,83 +1,161 @@
-import { useState, type FormEvent } from "react"
-import { Link, Navigate } from "react-router-dom"
+import { useEffect, useState, type FormEvent } from "react"
+import { Link, Navigate, useSearchParams } from "react-router-dom"
 import { formatMoney, siteConfig, sizeLabels } from "../data/config"
 import { useCart } from "../lib/cart"
 import { buildWhatsAppMessage, openWhatsApp } from "../lib/whatsapp"
 
+type MpStatus = {
+  configured: boolean
+  message: string
+}
+
 export function CheckoutPage() {
   const { items, subtotal, clear, getProduct, unitPrice } = useCart()
+  const [params] = useSearchParams()
   const [name, setName] = useState("")
   const [mode, setMode] = useState<"delivery" | "pickup">("delivery")
   const [address, setAddress] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<"mp" | "wpp" | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [mpHint, setMpHint] = useState<string | null>(null)
+  const [mpStatus, setMpStatus] = useState<MpStatus | null>(null)
+  const mpResult = params.get("mp")
 
-  if (items.length === 0) {
+  useEffect(() => {
+    void fetch("/api/mp-status")
+      .then((r) => r.json())
+      .then((data: MpStatus) => setMpStatus(data))
+      .catch(() =>
+        setMpStatus({
+          configured: false,
+          message: "No se pudo verificar MercadoPago.",
+        }),
+      )
+  }, [])
+
+  if (items.length === 0 && !mpResult) {
     return <Navigate to="/menu" replace />
   }
 
   const shipping = mode === "delivery" ? siteConfig.shippingFee : 0
   const total = subtotal + shipping
 
-  async function onSubmit(event: FormEvent) {
-    event.preventDefault()
-    setError(null)
-    setMpHint(null)
+  function buildPayload() {
+    return {
+      customerName: name.trim(),
+      mode,
+      address: address.trim(),
+      shippingFee: shipping,
+      items: items.map((item) => {
+        const product = getProduct(item.productId)
+        const title =
+          item.size === "U"
+            ? product?.name ?? item.productId
+            : `${product?.name ?? item.productId} ${sizeLabels[item.size]}`
+        return {
+          id: item.productId,
+          size: item.size,
+          title,
+          quantity: item.qty,
+          unit_price: product ? unitPrice(product, item.size) : 0,
+          note: item.note,
+        }
+      }),
+    }
+  }
 
+  function validate() {
     if (!name.trim()) {
       setError("Poné tu nombre.")
-      return
+      return false
     }
     if (mode === "delivery" && !address.trim()) {
       setError("Poné la dirección de envío.")
-      return
+      return false
     }
+    return true
+  }
 
-    setLoading(true)
-    let mpLink: string | null = null
+  async function payWithMercadoPago(event: FormEvent) {
+    event.preventDefault()
+    setError(null)
+    if (!validate()) return
 
+    setLoading("mp")
     try {
-      const payload = {
-        customerName: name.trim(),
-        mode,
-        address: address.trim(),
-        shippingFee: shipping,
-        items: items.map((item) => {
-          const product = getProduct(item.productId)
-          const title =
-            item.size === "U"
-              ? product?.name ?? item.productId
-              : `${product?.name ?? item.productId} ${sizeLabels[item.size]}`
-          return {
-            id: item.productId,
-            size: item.size,
-            title,
-            quantity: item.qty,
-            unit_price: product ? unitPrice(product, item.size) : 0,
-            note: item.note,
-          }
-        }),
-      }
-
       const res = await fetch("/api/create-preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(buildPayload()),
       })
-
-      if (res.ok) {
-        const data = (await res.json()) as { init_point?: string }
-        mpLink = data.init_point ?? null
-      } else {
-        setMpHint(
-          "MercadoPago no está configurado todavía: el pedido va igual por WhatsApp.",
-        )
+      const data = (await res.json()) as {
+        init_point?: string
+        sandbox_init_point?: string
+        error?: string
       }
-    } catch {
-      setMpHint(
-        "No pudimos generar el link de pago. Seguimos por WhatsApp.",
+
+      if (!res.ok || (!data.init_point && !data.sandbox_init_point)) {
+        setError(
+          data.error ||
+            "No se pudo crear el pago en MercadoPago. Revisá el Access Token.",
+        )
+        setLoading(null)
+        return
+      }
+
+      const checkoutUrl = data.init_point || data.sandbox_init_point
+      if (!checkoutUrl) {
+        setError("MercadoPago no devolvió link de pago.")
+        setLoading(null)
+        return
+      }
+
+      // También mandamos aviso por WhatsApp con el link
+      const message = buildWhatsAppMessage(
+        items,
+        {
+          name: name.trim(),
+          mode,
+          address: address.trim(),
+          shippingFee: shipping,
+          mpLink: checkoutUrl,
+        },
+        getProduct,
+        unitPrice,
       )
+      openWhatsApp(message)
+      clear()
+      window.location.href = checkoutUrl
+    } catch {
+      setError("Error de red al conectar con MercadoPago.")
+      setLoading(null)
+    }
+  }
+
+  async function sendWhatsAppOnly(event: FormEvent) {
+    event.preventDefault()
+    setError(null)
+    if (!validate()) return
+
+    setLoading("wpp")
+    let mpLink: string | null = null
+
+    if (mpStatus?.configured) {
+      try {
+        const res = await fetch("/api/create-preference", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildPayload()),
+        })
+        if (res.ok) {
+          const data = (await res.json()) as {
+            init_point?: string
+            sandbox_init_point?: string
+          }
+          mpLink = data.init_point || data.sandbox_init_point || null
+        }
+      } catch {
+        // sigue por WhatsApp sin link
+      }
     }
 
     const message = buildWhatsAppMessage(
@@ -92,21 +170,56 @@ export function CheckoutPage() {
       getProduct,
       unitPrice,
     )
-
     openWhatsApp(message)
     clear()
-    setLoading(false)
+    setLoading(null)
+  }
+
+  if (mpResult) {
+    const copy =
+      mpResult === "success"
+        ? "¡Pago recibido! Si no se abrió WhatsApp, escribinos para confirmar el pedido."
+        : mpResult === "pending"
+          ? "Tu pago quedó pendiente. Cuando se acredite, confirmamos el pedido."
+          : "El pago no se completó. Podés intentar de nuevo o pedir por WhatsApp."
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center sm:px-6">
+        <h1 className="font-display text-4xl font-bold text-blood">
+          {mpResult === "success" ? "Listo" : "MercadoPago"}
+        </h1>
+        <p className="mt-3 text-ink/70">{copy}</p>
+        <Link
+          to="/menu"
+          className="mt-8 inline-flex h-12 items-center rounded-full bg-blood px-6 font-extrabold text-white"
+        >
+          Volver al menú
+        </Link>
+      </div>
+    )
   }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-4xl font-bold text-blood">Checkout</h1>
       <p className="mt-2 text-ink/70">
-        Completá los datos. Te abrimos WhatsApp con el pedido
-        {mpHint ? "" : " y el link de MercadoPago si está activo"}.
+        Completá los datos y pagá con MercadoPago o mandá el pedido por WhatsApp.
       </p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-5">
+      <div
+        className={`mt-5 rounded-2xl px-4 py-3 text-sm font-bold ${
+          mpStatus?.configured
+            ? "bg-emerald-50 text-emerald-800"
+            : "bg-amber-50 text-amber-900"
+        }`}
+      >
+        {mpStatus
+          ? mpStatus.configured
+            ? "MercadoPago activo ✓"
+            : "MercadoPago pendiente: falta cargar MP_ACCESS_TOKEN en Cloudflare. Mientras tanto podés pedir por WhatsApp."
+          : "Verificando MercadoPago…"}
+      </div>
+
+      <form className="mt-8 space-y-5">
         <label className="block text-sm font-bold text-ink/80">
           Tu nombre
           <input
@@ -179,18 +292,23 @@ export function CheckoutPage() {
             {error}
           </p>
         ) : null}
-        {mpHint ? (
-          <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-            {mpHint}
-          </p>
-        ) : null}
 
         <button
-          type="submit"
-          disabled={loading}
+          type="button"
+          disabled={loading !== null || !mpStatus?.configured}
+          onClick={(e) => void payWithMercadoPago(e)}
+          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[#009EE3] text-base font-extrabold text-white transition hover:brightness-110 disabled:opacity-50"
+        >
+          {loading === "mp" ? "Abriendo MercadoPago…" : "Pagar con MercadoPago"}
+        </button>
+
+        <button
+          type="button"
+          disabled={loading !== null}
+          onClick={(e) => void sendWhatsAppOnly(e)}
           className="inline-flex h-12 w-full items-center justify-center rounded-full bg-blood text-base font-extrabold text-white transition hover:bg-blood-hot disabled:opacity-60"
         >
-          {loading ? "Preparando pedido…" : "Confirmar y abrir WhatsApp"}
+          {loading === "wpp" ? "Abriendo WhatsApp…" : "Confirmar por WhatsApp"}
         </button>
 
         <Link to="/carrito" className="block text-center text-sm font-bold text-blood">
