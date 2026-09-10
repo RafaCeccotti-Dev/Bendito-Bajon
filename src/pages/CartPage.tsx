@@ -3,8 +3,16 @@ import { formatMoney, sizeLabels } from "../data/config"
 import { useCart } from "../lib/cart"
 
 export function CartPage() {
-  const { items, subtotal, setQty, setNote, removeItem, getProduct, lineTotal } =
-    useCart()
+  const {
+    items,
+    subtotal,
+    setQty,
+    setNote,
+    removeItem,
+    getProduct,
+    unitPrice,
+    lineTotal,
+  } = useCart()
 
   if (items.length === 0) {
     return (
@@ -28,6 +36,10 @@ export function CartPage() {
         {items.map((item) => {
           const product = getProduct(item.productId)
           if (!product) return null
+          const label =
+            item.size === "U"
+              ? product.name
+              : `${product.name} · ${sizeLabels[item.size]}`
           return (
             <div
               key={item.key}
@@ -36,13 +48,15 @@ export function CartPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="font-display text-2xl font-bold text-blood">
-                    {product.name} · {sizeLabels[item.size]}
+                    {label}
                   </h2>
                   <p className="mt-1 text-sm text-ink/65">
-                    {formatMoney(product.prices[item.size])} c/u
+                    {formatMoney(unitPrice(product, item.size))} c/u
                   </p>
                 </div>
-                <p className="font-extrabold text-blood">{formatMoney(lineTotal(item))}</p>
+                <p className="font-extrabold text-blood">
+                  {formatMoney(lineTotal(item))}
+                </p>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-3">

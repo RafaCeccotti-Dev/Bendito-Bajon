@@ -1,0 +1,18 @@
+[
+  {
+    "id": "promo-combo-doble",
+    "title": "Combo Doble Bendito",
+    "description": "1 doble a elección + papas fritas + gaseosa.",
+    "price": 22000,
+    "image": "",
+    "active": true
+  },
+  {
+    "id": "promo-regala",
+    "title": "Regalá Bendito",
+    "description": "Gift card / pedido sorpresa para alguien que necesite un #momentobajon.",
+    "price": 0,
+    "image": "",
+    "active": true
+  }
+]

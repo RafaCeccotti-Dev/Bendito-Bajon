@@ -1,16 +1,17 @@
 import { useState, type FormEvent } from "react"
 import { Link, Navigate } from "react-router-dom"
-import { formatMoney, siteConfig } from "../data/config"
+import { formatMoney, siteConfig, sizeLabels } from "../data/config"
 import { useCart } from "../lib/cart"
 import { buildWhatsAppMessage, openWhatsApp } from "../lib/whatsapp"
 
 export function CheckoutPage() {
-  const { items, subtotal, clear, getProduct } = useCart()
+  const { items, subtotal, clear, getProduct, unitPrice } = useCart()
   const [name, setName] = useState("")
   const [mode, setMode] = useState<"delivery" | "pickup">("delivery")
   const [address, setAddress] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mpHint, setMpHint] = useState<string | null>(null)
 
   if (items.length === 0) {
     return <Navigate to="/menu" replace />
@@ -22,6 +23,7 @@ export function CheckoutPage() {
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
     setError(null)
+    setMpHint(null)
 
     if (!name.trim()) {
       setError("Poné tu nombre.")
@@ -43,11 +45,16 @@ export function CheckoutPage() {
         shippingFee: shipping,
         items: items.map((item) => {
           const product = getProduct(item.productId)
+          const title =
+            item.size === "U"
+              ? product?.name ?? item.productId
+              : `${product?.name ?? item.productId} ${sizeLabels[item.size]}`
           return {
             id: item.productId,
-            title: `${product?.name ?? item.productId} ${item.size}`,
+            size: item.size,
+            title,
             quantity: item.qty,
-            unit_price: product?.prices[item.size] ?? 0,
+            unit_price: product ? unitPrice(product, item.size) : 0,
             note: item.note,
           }
         }),
@@ -62,18 +69,29 @@ export function CheckoutPage() {
       if (res.ok) {
         const data = (await res.json()) as { init_point?: string }
         mpLink = data.init_point ?? null
+      } else {
+        setMpHint(
+          "MercadoPago no está configurado todavía: el pedido va igual por WhatsApp.",
+        )
       }
     } catch {
-      // Sin Function/MP igual mandamos WhatsApp
+      setMpHint(
+        "No pudimos generar el link de pago. Seguimos por WhatsApp.",
+      )
     }
 
-    const message = buildWhatsAppMessage(items, {
-      name: name.trim(),
-      mode,
-      address: address.trim(),
-      shippingFee: shipping,
-      mpLink,
-    })
+    const message = buildWhatsAppMessage(
+      items,
+      {
+        name: name.trim(),
+        mode,
+        address: address.trim(),
+        shippingFee: shipping,
+        mpLink,
+      },
+      getProduct,
+      unitPrice,
+    )
 
     openWhatsApp(message)
     clear()
@@ -84,7 +102,8 @@ export function CheckoutPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-4xl font-bold text-blood">Checkout</h1>
       <p className="mt-2 text-ink/70">
-        Completá los datos. Te abrimos WhatsApp con el pedido y el link de pago.
+        Completá los datos. Te abrimos WhatsApp con el pedido
+        {mpHint ? "" : " y el link de MercadoPago si está activo"}.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-5">
@@ -130,7 +149,7 @@ export function CheckoutPage() {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="mt-1 h-12 w-full rounded-2xl border border-blood/20 bg-white/80 px-4"
-              placeholder="José Hernández 660 DEPTO 2"
+              placeholder="Calle y número, Ceres"
               required
             />
           </label>
@@ -158,6 +177,11 @@ export function CheckoutPage() {
         {error ? (
           <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
             {error}
+          </p>
+        ) : null}
+        {mpHint ? (
+          <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
+            {mpHint}
           </p>
         ) : null}
 

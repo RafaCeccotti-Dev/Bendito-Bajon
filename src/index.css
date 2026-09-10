@@ -56,10 +56,23 @@ body {
 
 .sky-bg {
   background:
-    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.75), transparent 28%),
-    radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.55), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(245, 196, 81, 0.18), transparent 40%),
-    linear-gradient(180deg, #7eb8e8 0%, #cfe9ff 48%, #f7fbff 100%);
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.8), transparent 30%),
+    radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.55), transparent 26%),
+    radial-gradient(circle at 70% 70%, rgba(245, 196, 81, 0.16), transparent 36%),
+    radial-gradient(circle at 50% 100%, rgba(122, 31, 31, 0.08), transparent 42%),
+    linear-gradient(180deg, #6fafdf 0%, #cfe9ff 46%, #f7fbff 100%);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .cloud {

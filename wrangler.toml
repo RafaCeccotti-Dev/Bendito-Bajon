@@ -1,3 +1,7 @@
 name = "bendito-bajon"
 compatibility_date = "2026-09-07"
 pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "CATALOG"
+id = "a71c1946f49f4d47bd68f96423dbe816"

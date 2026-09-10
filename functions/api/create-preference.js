@@ -45,12 +45,17 @@ export async function onRequestPost(context) {
 
   const mpItems = body.items.map((item) => {
     const product = menu.find((p) => p.id === item.id)
-    const size = item.title.split(" ").pop() || "D"
-    const unit = product?.prices?.[size] ?? item.unit_price
+    let unit = item.unit_price
+    if (product?.fixedPrice != null) {
+      unit = product.fixedPrice
+    } else if (product?.prices) {
+      const size = String(item.size || item.title.split(" ").pop() || "D")
+      unit = product.prices[size] ?? item.unit_price
+    }
     return {
       title: item.title,
       quantity: item.quantity,
-      unit_price: unit,
+      unit_price: Number(unit) || 0,
       currency_id: "ARS",
     }
   })

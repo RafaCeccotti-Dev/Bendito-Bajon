@@ -102,5 +102,77 @@
     "name": "Bendita Provo",
     "description": "Carne smasheada, provoleta, danbo, salsa de tomates cherry, mayo chimi.",
     "prices": { "S": 14000, "D": 17500, "T": 20000, "C": 23000 }
+  },
+  {
+    "id": "papas-clasicas",
+    "category": "papas",
+    "categoryLabel": "PAPAS",
+    "name": "Papas fritas",
+    "description": "Porción clásica, crocantes y listas para el bajón.",
+    "fixedPrice": 4500
+  },
+  {
+    "id": "papas-cheddar",
+    "category": "papas",
+    "categoryLabel": "PAPAS",
+    "name": "Papas con cheddar",
+    "description": "Papas fritas bañadas en cheddar derretido.",
+    "fixedPrice": 6500
+  },
+  {
+    "id": "papas-bendito",
+    "category": "papas",
+    "categoryLabel": "PAPAS",
+    "name": "Papas Bendito",
+    "description": "Papas fritas, cheddar y panceta ahumada. El combo del cielo.",
+    "fixedPrice": 7500
+  },
+  {
+    "id": "brownie",
+    "category": "postres",
+    "categoryLabel": "POSTRES",
+    "name": "Brownie",
+    "description": "Brownie húmedo para cerrar el #momentobajon.",
+    "fixedPrice": 4500
+  },
+  {
+    "id": "helado",
+    "category": "postres",
+    "categoryLabel": "POSTRES",
+    "name": "Helado",
+    "description": "Porción de helado. Consultá sabores del día.",
+    "fixedPrice": 4000
+  },
+  {
+    "id": "postre-del-dia",
+    "category": "postres",
+    "categoryLabel": "POSTRES",
+    "name": "Postre del día",
+    "description": "La dulzura que arman según el día. Preguntá al confirmar.",
+    "fixedPrice": 5000
+  },
+  {
+    "id": "agua",
+    "category": "bebidas",
+    "categoryLabel": "BEBIDAS",
+    "name": "Agua",
+    "description": "Agua mineral.",
+    "fixedPrice": 2000
+  },
+  {
+    "id": "gaseosa",
+    "category": "bebidas",
+    "categoryLabel": "BEBIDAS",
+    "name": "Gaseosa",
+    "description": "Línea Coca-Cola / Sprite / Fanta.",
+    "fixedPrice": 3000
+  },
+  {
+    "id": "cerveza",
+    "category": "bebidas",
+    "categoryLabel": "BEBIDAS",
+    "name": "Cerveza",
+    "description": "Consultá marcas disponibles al confirmar el pedido.",
+    "fixedPrice": 4500
   }
 ]

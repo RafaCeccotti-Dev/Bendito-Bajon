@@ -3,21 +3,23 @@ export const siteConfig = {
   tagline: "#momentobajon",
   city: "Ceres",
   instagramUrl: "https://www.instagram.com/bendito.bajon_/",
-  // Link de catálogo WhatsApp (wa.me/c/<numero con prefijo de país>, sin +, ni espacios)
   catalogUrl: "https://wa.me/c/5493491440753",
-  /** Número WhatsApp sin +. Override con VITE_WHATSAPP_NUMBER. */
   whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? "5493491440753",
   shippingFee: Number(import.meta.env.VITE_SHIPPING_FEE ?? 1500),
+  mascotSrc: "/brand/mascot.png",
 }
 
-export type Size = "S" | "D" | "T" | "C"
+export type Size = "S" | "D" | "T" | "C" | "U"
 
 export const sizeLabels: Record<Size, string> = {
   S: "Simple",
   D: "Doble",
   T: "Triple",
   C: "Cuádruple",
+  U: "Única",
 }
+
+export const burgerSizes: Size[] = ["S", "D", "T", "C"]
 
 export function formatMoney(value: number) {
   return new Intl.NumberFormat("es-AR", {

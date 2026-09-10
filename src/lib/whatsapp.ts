@@ -1,6 +1,6 @@
 import { formatMoney, siteConfig, sizeLabels, type Size } from "../data/config"
 import type { CartItem } from "./cart"
-import { menu } from "./cart"
+import { useCart } from "./cart"
 
 type CheckoutInfo = {
   name: string
@@ -10,7 +10,12 @@ type CheckoutInfo = {
   mpLink?: string | null
 }
 
-export function buildWhatsAppMessage(items: CartItem[], info: CheckoutInfo) {
+export function buildWhatsAppMessage(
+  items: CartItem[],
+  info: CheckoutInfo,
+  getProduct: ReturnType<typeof useCart>["getProduct"],
+  unitPrice: ReturnType<typeof useCart>["unitPrice"],
+) {
   const lines: string[] = []
   lines.push(
     `- Hola ${siteConfig.brand}! Soy *${info.name}* y quiero hacer el siguiente pedido${
@@ -22,11 +27,13 @@ export function buildWhatsAppMessage(items: CartItem[], info: CheckoutInfo) {
   lines.push("")
 
   for (const item of items) {
-    const product = menu.find((p) => p.id === item.productId)
+    const product = getProduct(item.productId)
     if (!product) continue
-    const unit = product.prices[item.size as Size]
+    const unit = unitPrice(product, item.size)
+    const sizeText =
+      item.size === "U" ? "" : ` ${sizeLabels[item.size]}`
     lines.push(
-      `- ${item.qty} x ${product.name} ${sizeLabels[item.size]}(${formatMoney(unit * item.qty)})`,
+      `- ${item.qty} x ${product.name}${sizeText} (${formatMoney(unit * item.qty)})`,
     )
     if (item.note.trim()) {
       lines.push(`  ${item.note.trim().toUpperCase()}`)
@@ -40,9 +47,9 @@ export function buildWhatsAppMessage(items: CartItem[], info: CheckoutInfo) {
   }
 
   const foodTotal = items.reduce((acc, item) => {
-    const product = menu.find((p) => p.id === item.productId)
+    const product = getProduct(item.productId)
     if (!product) return acc
-    return acc + product.prices[item.size as Size] * item.qty
+    return acc + unitPrice(product, item.size) * item.qty
   }, 0)
   const total =
     foodTotal + (info.mode === "delivery" ? info.shippingFee : 0)
@@ -66,3 +73,5 @@ export function openWhatsApp(message: string) {
   const url = `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(message)}`
   window.open(url, "_blank", "noopener,noreferrer")
 }
+
+export type { Size }

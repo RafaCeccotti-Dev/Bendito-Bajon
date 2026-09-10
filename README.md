@@ -1,13 +1,13 @@
 # Bendito Bajón
 
-Sitio de pedidos online (estilo Burgués): menú → carrito → checkout → MercadoPago + WhatsApp.
+Sitio de pedidos online: menú → carrito → checkout → MercadoPago + WhatsApp.
 
 Instagram: https://www.instagram.com/bendito.bajon_/
+Prod: https://bendito-bajon.pages.dev/
 
 ## Local
 
 ```bash
-cd D:\Proyectos\bendito-bajon
 npm install
 npm run dev
 ```
@@ -19,38 +19,30 @@ VITE_WHATSAPP_NUMBER=5493491440753
 VITE_SHIPPING_FEE=1500
 ```
 
-## Subir a Cloudflare Pages (producción)
+## Panel del dueño
 
-No me pases usuario ni contraseña. Lo hacés vos en 5 minutos:
+URL: `/admin`
 
-### Opción A — Dashboard (la más simple)
+En Cloudflare Pages → Settings → Environment variables / Secrets:
 
-1. Subí el repo a GitHub (crear repo `bendito-bajon` y push).
-2. Entrá a [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-3. Elegí el repo `bendito-bajon`.
-4. Build settings:
-   - **Framework preset:** Vite
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-5. Variables (Settings → Environment variables):
-   - `VITE_WHATSAPP_NUMBER` = `5493491440753`
-   - `VITE_SHIPPING_FEE` = `1500` (o el que digan)
-   - Secret: `MP_ACCESS_TOKEN` = Access Token de MercadoPago (para el link de pago)
-6. **Save and Deploy**.
-7. Te da una URL tipo `https://bendito-bajon.pages.dev`.
+- `ADMIN_PASSWORD` = contraseña del panel
+- `MP_ACCESS_TOKEN` = Access Token de MercadoPago (opcional; sin esto el pedido igual va por WhatsApp)
+- `VITE_WHATSAPP_NUMBER` / `VITE_SHIPPING_FEE` si querés override en build
 
-Para dar de baja después: Workers & Pages → el proyecto → Settings → Delete project.
+Desde el panel se pueden:
 
-### Opción B — CLI (`wrangler`)
+- subir fotos a cada producto (burgers, papas, postres, bebidas)
+- crear / editar / activar promos
+
+Los datos viven en Cloudflare KV (`CATALOG`).
+
+## Deploy
 
 ```bash
-npm install
 npx wrangler login
 npm run deploy
 ```
 
-Después, en el proyecto Pages, cargá las mismas variables/secrets.
-
 ## Nota MercadoPago
 
-Sin `MP_ACCESS_TOKEN` el sitio igual funciona: abre WhatsApp con el pedido (sin link de pago). Cuando cargues el token, el link aparece en el mensaje.
+Sin `MP_ACCESS_TOKEN` el sitio funciona igual: abre WhatsApp con el pedido (sin link de pago). Cuando cargues el token, el link aparece en el mensaje.
