@@ -20,16 +20,18 @@ function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false)
 
   return (
-    <article className="overflow-hidden rounded-3xl border border-white/70 bg-white/65 shadow-sm backdrop-blur">
+    <article className="overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/65 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md">
       {product.image ? (
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-44 w-full object-cover"
-        />
+        <div className="aspect-square w-full overflow-hidden bg-ink/5">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
       ) : (
-        <div className="flex h-36 items-center justify-center bg-gradient-to-br from-sky/35 via-transparent to-halo/25">
-          <img src={siteConfig.mascotSrc} alt="" className="h-24 w-auto object-contain drop-shadow-md" />
+        <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-sky/35 via-transparent to-halo/25">
+          <img src={siteConfig.mascotSrc} alt="" className="h-28 w-auto object-contain drop-shadow-md" />
         </div>
       )}
       <div className="p-5">
@@ -144,14 +146,16 @@ export function MenuPage() {
               className="overflow-hidden rounded-3xl border border-white/70 bg-white/65 shadow-sm backdrop-blur"
             >
               {promo.image ? (
-                <img
-                  src={promo.image}
-                  alt={promo.title}
-                  className="h-44 w-full object-cover"
-                />
+                <div className="aspect-square w-full overflow-hidden bg-ink/5">
+                  <img
+                    src={promo.image}
+                    alt={promo.title}
+                    className="h-full w-full object-cover object-center"
+                  />
+                </div>
               ) : (
-                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-halo/40 to-sky/30">
-                  <img src={siteConfig.mascotSrc} alt="" className="h-24 w-auto object-contain" />
+                <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-halo/40 to-sky/30">
+                  <img src={siteConfig.mascotSrc} alt="" className="h-28 w-auto object-contain" />
                 </div>
               )}
               <div className="p-5">

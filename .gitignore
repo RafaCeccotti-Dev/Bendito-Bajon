@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .env
 .env.*
+public/menu-temp/
 .superpowers/
 .wrangler/
 

@@ -1,5 +1,41 @@
 import { siteConfig } from "../data/config"
 
+function BurgerIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden>
+      {/* top bun */}
+      <path
+        d="M10 28c0-10 10-16 22-16s22 6 22 16H10z"
+        fill="#E8A04A"
+      />
+      <path
+        d="M14 20c1.2-1.5 3-1.2 3.5.4M22 16.5c1-1.4 2.8-1.2 3.2.5M32 15c1.1-1.5 2.9-1.1 3.3.6M42 17c1.1-1.4 2.8-1 3.1.7"
+        stroke="#C47A2A"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* cheese */}
+      <path d="M11 29h42l-3 5H14z" fill="#F5C542" />
+      {/* patty */}
+      <rect x="12" y="34" width="40" height="7" rx="3.5" fill="#6B2E1A" />
+      {/* lettuce */}
+      <path
+        d="M11 42c3-3 7 1 10-1s6-3 10 0 7 2 11-1 7-1 10 2v3H11z"
+        fill="#6FBF3A"
+      />
+      {/* bottom bun */}
+      <path d="M12 45h40c0 7-8 11-20 11S12 52 12 45z" fill="#D4893A" />
+      {/* small WA badge */}
+      <circle cx="50" cy="50" r="11" fill="#25D366" />
+      <path
+        d="M50 42.2a7.7 7.7 0 0 0-6.7 11.5l-.4 2.3 2.4-.4A7.7 7.7 0 1 0 50 42.2Zm4.1 10.3c-.2.5-1 1-1.4 1.1-.4.1-.8.2-1.3.1-.5-.1-1.1-.3-1.8-.7a9.5 9.5 0 0 1-3.4-3.3c-.4-.6-.7-1.2-.7-1.6 0-.3.1-.5.3-.7l.5-.6c.1-.2.2-.3.3-.5.1-.2 0-.3 0-.5l-.7-1.7c-.1-.3-.3-.3-.5-.3h-.4c-.2 0-.5.1-.7.4s-.9 1-.9 2.3.9 2.6 1 2.8c.1.2 1.8 2.8 4.4 3.8.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.6-.3Z"
+        fill="#fff"
+      />
+    </svg>
+  )
+}
+
 export function WhatsAppFloat() {
   const href = `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(
     `Hola ${siteConfig.brand}! Quiero hacer un pedido 🍔`,
@@ -11,11 +47,9 @@ export function WhatsAppFloat() {
       target="_blank"
       rel="noreferrer"
       aria-label="Escribinos por WhatsApp"
-      className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ebe57] focus:outline-none focus:ring-4 focus:ring-[#25D366]/40"
+      className="fixed bottom-5 right-5 z-50 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#fff6e8] to-[#ffd7a0] text-ink shadow-[0_10px_28px_rgba(140,40,20,0.35)] ring-2 ring-blood/25 transition hover:scale-110 hover:ring-blood/50 focus:outline-none focus:ring-4 focus:ring-blood/30 animate-floaty"
     >
-      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor" aria-hidden>
-        <path d="M20.52 3.48A11.86 11.86 0 0 0 12.04 0C5.5 0 .2 5.3.2 11.82c0 2.08.55 4.12 1.6 5.92L0 24l6.43-1.68a11.8 11.8 0 0 0 5.6 1.43h.01c6.54 0 11.84-5.3 11.84-11.82 0-3.16-1.23-6.13-3.36-8.45ZM12.04 21.5h-.01a9.7 9.7 0 0 1-4.94-1.35l-.35-.21-3.81 1 1.02-3.72-.23-.38a9.7 9.7 0 0 1-1.49-5.18c0-5.36 4.37-9.72 9.74-9.72 2.6 0 5.04 1.01 6.88 2.85a9.66 9.66 0 0 1 2.85 6.88c0 5.36-4.37 9.83-9.76 9.83Zm5.34-7.28c-.29-.15-1.72-.85-1.99-.94-.27-.1-.46-.15-.66.15-.2.29-.76.94-.93 1.13-.17.2-.34.22-.63.07-.29-.15-1.23-.45-2.34-1.44-.86-.77-1.45-1.72-1.62-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.51.15-.17.2-.29.29-.48.1-.2.05-.37-.02-.52-.07-.15-.66-1.59-.9-2.18-.24-.58-.48-.5-.66-.51h-.56c-.2 0-.52.07-.79.37-.27.29-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.26-.2-.55-.34Z" />
-      </svg>
+      <BurgerIcon className="h-11 w-11 drop-shadow-sm" />
     </a>
   )
 }

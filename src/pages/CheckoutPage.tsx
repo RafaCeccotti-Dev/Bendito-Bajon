@@ -32,6 +32,12 @@ export function CheckoutPage() {
       )
   }, [])
 
+  useEffect(() => {
+    if (mpResult === "success") clear()
+    // clear cambia de identidad al vaciar el carrito; solo nos importa el resultado de MP
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mpResult])
+
   if (items.length === 0 && !mpResult) {
     return <Navigate to="/menu" replace />
   }
@@ -109,21 +115,6 @@ export function CheckoutPage() {
         return
       }
 
-      // También mandamos aviso por WhatsApp con el link
-      const message = buildWhatsAppMessage(
-        items,
-        {
-          name: name.trim(),
-          mode,
-          address: address.trim(),
-          shippingFee: shipping,
-          mpLink: checkoutUrl,
-        },
-        getProduct,
-        unitPrice,
-      )
-      openWhatsApp(message)
-      clear()
       window.location.href = checkoutUrl
     } catch {
       setError("Error de red al conectar con MercadoPago.")
@@ -178,7 +169,7 @@ export function CheckoutPage() {
   if (mpResult) {
     const copy =
       mpResult === "success"
-        ? "¡Pago recibido! Si no se abrió WhatsApp, escribinos para confirmar el pedido."
+        ? "¡Pago recibido! Ya figura en MercadoPago. Si querés, también podés avisar al local por WhatsApp."
         : mpResult === "pending"
           ? "Tu pago quedó pendiente. Cuando se acredite, confirmamos el pedido."
           : "El pago no se completó. Podés intentar de nuevo o pedir por WhatsApp."
@@ -202,7 +193,8 @@ export function CheckoutPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-4xl font-bold text-blood">Checkout</h1>
       <p className="mt-2 text-ink/70">
-        Completá los datos y pagá con MercadoPago o mandá el pedido por WhatsApp.
+        Completá los datos. <strong>Pagar con MercadoPago</strong> te lleva
+        directo al cobro. El otro botón manda el pedido por WhatsApp.
       </p>
 
       <div

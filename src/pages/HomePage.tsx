@@ -4,7 +4,8 @@ import { useCart } from "../lib/cart"
 import { InstagramIcon } from "../components/InstagramIcon"
 
 export function HomePage() {
-  const { promos } = useCart()
+  const { promos, products } = useCart()
+  const featured = products.filter((p) => p.image).slice(0, 6)
 
   return (
     <div>
@@ -51,6 +52,50 @@ export function HomePage() {
         </div>
       </section>
 
+      {featured.length > 0 ? (
+        <section className="relative z-20 mx-auto max-w-5xl px-4 py-10 sm:px-6">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blood/70">
+                Destacadas
+              </p>
+              <h2 className="mt-1 font-display text-3xl font-bold text-blood">
+                Las burgers
+              </h2>
+            </div>
+            <Link to="/menu" className="text-sm font-extrabold text-blood">
+              Ver menú →
+            </Link>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+            {featured.map((product, i) => (
+              <Link
+                key={product.id}
+                to={`/menu?cat=${product.category}`}
+                className="group overflow-hidden rounded-[1.5rem] border border-white/70 bg-white/65 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up"
+                style={{ animationDelay: `${80 + i * 60}ms` }}
+              >
+                <div className="aspect-square overflow-hidden bg-ink/5">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-3 sm:p-4">
+                  <p className="font-display text-lg font-bold text-blood sm:text-xl">
+                    {product.name}
+                  </p>
+                  <p className="mt-0.5 text-xs font-bold text-blood/60">
+                    desde {formatMoney(product.prices?.S ?? product.fixedPrice ?? 0)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {promos.length > 0 ? (
         <section className="relative z-20 mx-auto max-w-5xl px-4 py-10 sm:px-6">
           <div className="flex items-end justify-between gap-3">
@@ -74,13 +119,15 @@ export function HomePage() {
                 style={{ animationDelay: `${100 + i * 80}ms` }}
               >
                 {promo.image ? (
-                  <img
-                    src={promo.image}
-                    alt={promo.title}
-                    className="h-40 w-full object-cover"
-                  />
+                  <div className="aspect-square w-full overflow-hidden bg-ink/5 sm:aspect-[4/3]">
+                    <img
+                      src={promo.image}
+                      alt={promo.title}
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
                 ) : (
-                  <div className="flex h-28 items-center justify-center bg-gradient-to-r from-sky/40 to-halo/40">
+                  <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-r from-sky/40 to-halo/40">
                     <img
                       src={siteConfig.mascotSrc}
                       alt=""
@@ -113,22 +160,6 @@ export function HomePage() {
           Burgers, papas, postres y bebidas. Elegí, sumá al carrito y cerramos
           por WhatsApp.
         </p>
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          {[
-            ["BURGER'S", "Smash con aderezo Bendito."],
-            ["PAPAS", "Clásicas, cheddar y Bendito."],
-            ["POSTRES", "Para cerrar el bajón."],
-          ].map(([title, text], i) => (
-            <div
-              key={title}
-              className="rounded-3xl border border-white/70 bg-white/55 p-5 shadow-sm backdrop-blur animate-fade-up"
-              style={{ animationDelay: `${120 + i * 80}ms` }}
-            >
-              <p className="font-display text-xl font-bold text-blood">{title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-ink/70">{text}</p>
-            </div>
-          ))}
-        </div>
         <Link
           to="/menu"
           className="mt-8 inline-flex h-11 items-center rounded-full bg-halo px-5 text-sm font-extrabold text-ink"

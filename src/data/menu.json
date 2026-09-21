@@ -5,6 +5,7 @@
     "categoryLabel": "BURGER'S",
     "name": "Clásica",
     "description": "Carne smasheada, cheddar x2, lechuga, tomate, aderezo Bendito Bajón.",
+    "image": "/menu/clasica.jpg",
     "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
   },
   {
@@ -13,6 +14,7 @@
     "categoryLabel": "BURGER'S",
     "name": "Oklahoma",
     "description": "Carne smasheada, cheddar x2, cebolla finamente cortada cocinada con los medallones.",
+    "image": "/menu/oklahoma.webp",
     "prices": { "S": 13000, "D": 16500, "T": 18500, "C": 21000 }
   },
   {
@@ -21,6 +23,7 @@
     "categoryLabel": "BURGER'S",
     "name": "Cuarto",
     "description": "Carne smasheada, cheddar x2, cebollita picada, ketchup y mostaza.",
+    "image": "/menu/cuarto.jpg",
     "prices": { "S": 12000, "D": 15000, "T": 18000, "C": 20000 }
   },
   {
@@ -53,6 +56,7 @@
     "categoryLabel": "BENDITAS",
     "name": "Cheese Bacon",
     "description": "Carne smasheada, cheddar x2, panceta ahumada, barbacoa.",
+    "image": "/menu/cheese-bacon.jpg",
     "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
   },
   {
@@ -85,6 +89,7 @@
     "categoryLabel": "BAJONERAS",
     "name": "Argenta",
     "description": "Carne smasheada, emmental x2, morrones salteados, salsa criolla, mayo casera.",
+    "image": "/menu/argenta.webp",
     "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
   },
   {
@@ -93,6 +98,7 @@
     "categoryLabel": "BAJONERAS",
     "name": "Bendita Crispy",
     "description": "Carne smasheada, cheddar x2, cebolla crispy, panceta ahumada, barbacoa o aderezo Bendito.",
+    "image": "/menu/bendita-crispy.jpg",
     "prices": { "S": 14000, "D": 17000, "T": 19000, "C": 22000 }
   },
   {
