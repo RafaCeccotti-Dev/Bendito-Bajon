@@ -7,6 +7,11 @@ export const siteConfig = {
   whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? "5493491440753",
   shippingFee: Number(import.meta.env.VITE_SHIPPING_FEE ?? 1500),
   mascotSrc: "/brand/mascot.png",
+  /** null = sin tope. Cuando el dueño fije cupo (ej. 10), va acá. */
+  slotMaxPer: null as number | null,
+  slotStartHour: 21,
+  slotEndHour: 23,
+  slotIntervalMin: 15,
 }
 
 export type Size = "S" | "D" | "T" | "C" | "U"

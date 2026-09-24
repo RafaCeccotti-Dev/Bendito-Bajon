@@ -2,7 +2,20 @@ import { useEffect, useState, type FormEvent } from "react"
 import { Link, Navigate, useSearchParams } from "react-router-dom"
 import { formatMoney, siteConfig, sizeLabels } from "../data/config"
 import { useCart } from "../lib/cart"
-import { buildWhatsAppMessage, openWhatsApp } from "../lib/whatsapp"
+import {
+  buildOrderFromCart,
+  buildWhatsAppMessage,
+  buildWhatsAppMessageFromOrder,
+  clearPaidWhatsAppUrl,
+  clearPendingOrder,
+  loadPaidWhatsAppUrl,
+  loadPendingOrder,
+  openWhatsApp,
+  savePaidWhatsAppUrl,
+  savePendingOrder,
+  whatsappUrl,
+} from "../lib/whatsapp"
+import { decorateSlots, type OrderSlot } from "../lib/slots"
 
 type MpStatus = {
   configured: boolean
@@ -15,10 +28,17 @@ export function CheckoutPage() {
   const [name, setName] = useState("")
   const [mode, setMode] = useState<"delivery" | "pickup">("delivery")
   const [address, setAddress] = useState("")
+  const [slot, setSlot] = useState("")
+  const [slots, setSlots] = useState<OrderSlot[]>(() => decorateSlots().slots)
   const [loading, setLoading] = useState<"mp" | "wpp" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [mpStatus, setMpStatus] = useState<MpStatus | null>(null)
   const mpResult = params.get("mp")
+  const paymentId =
+    params.get("payment_id") || params.get("collection_id") || ""
+  const [paidWhatsApp, setPaidWhatsApp] = useState<string | null>(() =>
+    mpResult === "success" ? loadPaidWhatsAppUrl() : null,
+  )
 
   useEffect(() => {
     void fetch("/api/mp-status")
@@ -33,8 +53,40 @@ export function CheckoutPage() {
   }, [])
 
   useEffect(() => {
-    if (mpResult === "success") clear()
-    // clear cambia de identidad al vaciar el carrito; solo nos importa el resultado de MP
+    void fetch("/api/slots")
+      .then((r) => r.json())
+      .then((data: { slots?: OrderSlot[] }) => {
+        if (Array.isArray(data.slots) && data.slots.length) {
+          setSlots(data.slots)
+        }
+      })
+      .catch(() => {
+        setSlots(decorateSlots().slots)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (mpResult !== "success") return
+    clear()
+
+    const existing = loadPaidWhatsAppUrl()
+    const order = loadPendingOrder()
+    const url =
+      existing ||
+      (order
+        ? whatsappUrl(
+            buildWhatsAppMessageFromOrder(order, {
+              paid: true,
+              paymentId: paymentId || undefined,
+            }),
+          )
+        : null)
+
+    if (!url) return
+    savePaidWhatsAppUrl(url)
+    setPaidWhatsApp(url)
+    clearPendingOrder()
+    window.location.assign(url)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mpResult])
 
@@ -51,6 +103,7 @@ export function CheckoutPage() {
       mode,
       address: address.trim(),
       shippingFee: shipping,
+      slot,
       items: items.map((item) => {
         const product = getProduct(item.productId)
         const title =
@@ -78,6 +131,37 @@ export function CheckoutPage() {
       setError("Poné la dirección de envío.")
       return false
     }
+    if (!slot) {
+      setError("Elegí el horario del pedido.")
+      return false
+    }
+    const chosen = slots.find((s) => s.time === slot)
+    if (chosen && !chosen.available) {
+      setError("Ese horario ya no está disponible. Elegí otro.")
+      return false
+    }
+    return true
+  }
+
+  async function reserveSlot() {
+    try {
+      const res = await fetch("/api/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slot }),
+      })
+      const data = (await res.json()) as {
+        error?: string
+        slots?: OrderSlot[]
+      }
+      if (Array.isArray(data.slots)) setSlots(data.slots)
+      if (!res.ok) {
+        setError(data.error || "No se pudo reservar ese horario.")
+        return false
+      }
+    } catch {
+      // En local (Vite) no hay API; el pedido igual sale.
+    }
     return true
   }
 
@@ -87,6 +171,10 @@ export function CheckoutPage() {
     if (!validate()) return
 
     setLoading("mp")
+    if (!(await reserveSlot())) {
+      setLoading(null)
+      return
+    }
     try {
       const res = await fetch("/api/create-preference", {
         method: "POST",
@@ -115,6 +203,21 @@ export function CheckoutPage() {
         return
       }
 
+      clearPaidWhatsAppUrl()
+      savePendingOrder(
+        buildOrderFromCart(
+          items,
+          {
+            name: name.trim(),
+            mode,
+            address: address.trim(),
+            shippingFee: shipping,
+            slot,
+          },
+          getProduct,
+          unitPrice,
+        ),
+      )
       window.location.href = checkoutUrl
     } catch {
       setError("Error de red al conectar con MercadoPago.")
@@ -128,6 +231,10 @@ export function CheckoutPage() {
     if (!validate()) return
 
     setLoading("wpp")
+    if (!(await reserveSlot())) {
+      setLoading(null)
+      return
+    }
     let mpLink: string | null = null
 
     if (mpStatus?.configured) {
@@ -156,6 +263,7 @@ export function CheckoutPage() {
         mode,
         address: address.trim(),
         shippingFee: shipping,
+        slot,
         mpLink,
       },
       getProduct,
@@ -169,22 +277,38 @@ export function CheckoutPage() {
   if (mpResult) {
     const copy =
       mpResult === "success"
-        ? "¡Pago recibido! Ya figura en MercadoPago. Si querés, también podés avisar al local por WhatsApp."
+        ? paidWhatsApp
+          ? "Pago listo. Te estamos abriendo el WhatsApp de Bendito Bajón con el pedido."
+          : "¡Pago recibido! Ya figura en MercadoPago."
         : mpResult === "pending"
           ? "Tu pago quedó pendiente. Cuando se acredite, confirmamos el pedido."
           : "El pago no se completó. Podés intentar de nuevo o pedir por WhatsApp."
     return (
       <div className="mx-auto max-w-xl px-4 py-16 text-center sm:px-6">
         <h1 className="font-display text-4xl font-bold text-blood">
-          {mpResult === "success" ? "Listo" : "MercadoPago"}
+          {mpResult === "success" ? "Pago listo" : "MercadoPago"}
         </h1>
         <p className="mt-3 text-ink/70">{copy}</p>
-        <Link
-          to="/menu"
-          className="mt-8 inline-flex h-12 items-center rounded-full bg-blood px-6 font-extrabold text-white"
-        >
-          Volver al menú
-        </Link>
+        {mpResult === "success" && paidWhatsApp ? (
+          <>
+            <p className="mt-2 text-sm text-ink/50">
+              Si no se abre solo, tocá el botón.
+            </p>
+            <a
+              href={paidWhatsApp}
+              className="mt-6 inline-flex h-12 items-center rounded-full bg-blood px-6 font-extrabold text-white"
+            >
+              Abrir WhatsApp con el pedido
+            </a>
+          </>
+        ) : (
+          <Link
+            to="/menu"
+            className="mt-8 inline-flex h-12 items-center rounded-full bg-blood px-6 font-extrabold text-white"
+          >
+            Volver al menú
+          </Link>
+        )}
       </div>
     )
   }
@@ -193,8 +317,9 @@ export function CheckoutPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-4xl font-bold text-blood">Checkout</h1>
       <p className="mt-2 text-ink/70">
-        Completá los datos. <strong>Pagar con MercadoPago</strong> te lleva
-        directo al cobro. El otro botón manda el pedido por WhatsApp.
+        Completá los datos. <strong>Pagar con MercadoPago</strong> cobra el
+        pedido y, si el pago sale, te abre el WhatsApp del local con el pedido
+        ya pagado.
       </p>
 
       <div
@@ -245,6 +370,47 @@ export function CheckoutPage() {
               Retiro en el local
             </button>
           </div>
+        </fieldset>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-bold text-ink/80">Horario</legend>
+          <p className="text-sm text-ink/60">
+            De 21 a 23 hs, cada 15 minutos. Delivery o retiro, misma ventana.
+          </p>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {slots
+              .filter((option) => option.reason !== "past")
+              .map((option) => {
+              const open = option.available
+              return (
+                <button
+                  key={option.time}
+                  type="button"
+                  disabled={!open}
+                  onClick={() => setSlot(option.time)}
+                  className={`rounded-2xl border px-2 py-3 text-center text-sm font-extrabold transition ${
+                    !open
+                      ? "cursor-not-allowed border-blood/10 bg-white/40 text-ink/30"
+                      : slot === option.time
+                        ? "border-blood bg-blood text-white"
+                        : "border-blood/15 bg-white/80 text-blood hover:border-blood/40"
+                  }`}
+                >
+                  {option.time}
+                  {!open ? (
+                    <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-wide">
+                      Completo
+                    </span>
+                  ) : null}
+                </button>
+              )
+            })}
+          </div>
+          {slots.every((s) => !s.available) ? (
+            <p className="text-sm font-bold text-blood/80">
+              Hoy no quedan horarios. Mañana de 21 a 23 hs.
+            </p>
+          ) : null}
         </fieldset>
 
         {mode === "delivery" ? (

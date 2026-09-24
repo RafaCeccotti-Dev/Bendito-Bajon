@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { burgerSizes, formatMoney, sizeLabels, siteConfig, type Size } from "../data/config"
+import { burgerSizes, formatMoney, sizeLabels, type Size } from "../data/config"
 import { useCart, type Product } from "../lib/cart"
+import { PhotoSoon } from "../components/PhotoSoon"
 
 const categories = [
   { id: "burgers", label: "BURGER'S" },
@@ -30,9 +31,7 @@ function ProductCard({ product }: { product: Product }) {
           />
         </div>
       ) : (
-        <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-sky/35 via-transparent to-halo/25">
-          <img src={siteConfig.mascotSrc} alt="" className="h-28 w-auto object-contain drop-shadow-md" />
-        </div>
+        <PhotoSoon />
       )}
       <div className="p-5">
         <h3 className="font-display text-2xl font-bold text-blood">{product.name}</h3>
@@ -154,9 +153,7 @@ export function MenuPage() {
                   />
                 </div>
               ) : (
-                <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-halo/40 to-sky/30">
-                  <img src={siteConfig.mascotSrc} alt="" className="h-28 w-auto object-contain" />
-                </div>
+                <PhotoSoon />
               )}
               <div className="p-5">
                 <h3 className="font-display text-2xl font-bold text-blood">

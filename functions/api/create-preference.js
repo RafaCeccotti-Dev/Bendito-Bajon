@@ -89,6 +89,7 @@ export async function onRequestPost(context) {
       customer_name: body.customerName || "",
       mode: body.mode || "pickup",
       address: body.address || "",
+      slot: body.slot || "",
     },
   }
 

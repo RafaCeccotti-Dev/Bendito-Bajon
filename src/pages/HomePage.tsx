@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { formatMoney, siteConfig } from "../data/config"
 import { useCart } from "../lib/cart"
 import { InstagramIcon } from "../components/InstagramIcon"
+import { PhotoSoon } from "../components/PhotoSoon"
 
 export function HomePage() {
   const { promos, products } = useCart()
@@ -127,13 +128,7 @@ export function HomePage() {
                     />
                   </div>
                 ) : (
-                  <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-r from-sky/40 to-halo/40">
-                    <img
-                      src={siteConfig.mascotSrc}
-                      alt=""
-                      className="h-16 w-auto object-contain"
-                    />
-                  </div>
+                  <PhotoSoon className="aspect-[4/3]" />
                 )}
                 <div className="p-5">
                   <h3 className="font-display text-2xl font-bold text-blood">
